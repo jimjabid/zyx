@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+body {
+  font-family: 'Cabin', sans-serif;
+  background:#171516 
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
