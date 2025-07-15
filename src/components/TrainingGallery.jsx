@@ -23,10 +23,10 @@ const TrainingGallery = () => {
     { src: "./gallery-3.png", alt: "Entrenamiento ZYX #3" },
     { src: "./gallery-4.png", alt: "Entrenamiento ZYX #4" },
     { src: "./gallery-5.png", alt: "Entrenamiento ZYX #5" },
-    { src: "/gallery-6.png", alt: "Entrenamiento ZYX #6" },
-    { src: "/gallery-7.png", alt: "Entrenamiento ZYX #7" },
-    { src: "/gallery-8.png", alt: "Entrenamiento ZYX #8" },
-    { src: "/gallery-9.png", alt: "Entrenamiento ZYX #9" },
+    { src: "./gallery-6.png", alt: "Entrenamiento ZYX #6" },
+    { src: "./gallery-7.png", alt: "Entrenamiento ZYX #7" },
+    { src: "./gallery-8.png", alt: "Entrenamiento ZYX #8" },
+    { src: "./gallery-9.png", alt: "Entrenamiento ZYX #9" },
   ];
 
   useGSAP(() => {
