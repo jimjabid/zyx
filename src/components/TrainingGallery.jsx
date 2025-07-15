@@ -97,7 +97,7 @@ const TrainingGallery = () => {
             Entrenamiento
           </h2>
           <p className="gallery-description font-cabin text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-            Entrenamientos de calistenia y bodyweight para todas las edades.
+            Entrenamientos con tu propio peso para todas las edades.
             Mejora fuerza, movilidad y conciencia corporal sin máquinas.
           </p>
         </div>

@@ -15,7 +15,7 @@ const FAQ = () => {
     },
     {
       question: "¿Cuánto dura cada clase?",
-      answer: "Cada sesión de entrenamiento dura aproximadamente 60 minutos, incluyendo calentamiento, trabajo principal y relajación. También ofrecemos sesiones express de 30 minutos para quienes tienen poco tiempo."
+      answer: "Cada sesión de entrenamiento dura aproximadamente 60 minutos, incluyendo calentamiento, trabajo principal y relajación."
     },
     {
       question: "¿Qué debo traer a la clase?",
