@@ -26,7 +26,7 @@ const Hero = () => {
 
   const handleWhatsAppClick = () => {
     // Replace YOUR_NUMBER with actual WhatsApp number
-    window.open("https://wa.me/541151533922", "_blank");
+    window.open("https://wa.me/541151533922?text=Hola, quiero saber más sobre los programas de entrenamiento", "_blank");
   };
 
   return (
