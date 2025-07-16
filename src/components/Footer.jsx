@@ -37,42 +37,52 @@ const Footer = () => {
               </div>
               <div className="flex items-center justify-center lg:justify-start space-x-2">
                 <span>✉️</span>
-                <a 
+                <a
                   href="mailto:contacto@zyxfit.com"
                   className="hover:text-[#70C4B1] transition-colors duration-200"
                 >
                   contacto@zyxfit.com
                 </a>
               </div>
+              <div className="flex items-center justify-center lg:justify-start space-x-2">
+                <span>📞</span>
+                <a
+                  href="https://wa.me/541151533922?text=Hola, quiero saber más sobre los programas de entrenamiento"
+                  className="hover:text-[#70C4B1] transition-colors duration-200"
+                >
+                  +54 11 5153 3922
+                </a>
+              </div>
             </div>
-            
-       
           </div>
 
           {/* Right content - Logo */}
           <div className="flex justify-center lg:justify-end">
             <div className="flex items-center space-x-3">
-              <img 
-                src={zyxLogo} 
-                alt="ZYX Logo" 
+              <img
+                src={zyxLogo}
+                alt="ZYX Logo"
                 className="h-24 w-auto opacity-80 hover:opacity-100 transition-opacity duration-200"
               />
-           
             </div>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="mt-6 pt-6 border-t border-gray-800 text-center text-sm text-white/50 font-cabin">
-          <p>&copy; {new Date().getFullYear()} ZYX Fitness. Todos los derechos reservados.</p>
+          <p>
+            &copy; {new Date().getFullYear()} ZYX Fitness. Todos los derechos
+            reservados.
+          </p>
         </div>
       </div>
-           {/* Developer credit */}
-           <div className="mt-4 text-sm text-white/60 text-center lg:text-center font-cabin">
-              Desarrollado por Jabid Jimenez
-            </div>
+      {/* Developer credit */}
+      <div className="mt-4 text-sm text-white/60 text-center lg:text-center font-cabin flex flex-col justify-center items-center">
+        Landing Page desarrollada y diseñada por{" "}
+        <span className="text-[#70C4B1] ">Jabid Jimenez</span>
+      </div>
     </footer>
   );
 };
 
-export default Footer; 
+export default Footer;
