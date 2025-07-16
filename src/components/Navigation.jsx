@@ -55,6 +55,18 @@ const Navigation = () => {
         delay: 0.1,
       }
     );
+
+    // Animate CTA button on page load
+    gsap.fromTo(
+      ".nav-cta",
+      { opacity: 0, x: -30 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.8,
+        delay: 0.3,
+      }
+    );
   }, []);
 
   const scrollToSection = (href) => {
@@ -73,55 +85,100 @@ const Navigation = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleCtaClick = () => {
+    window.open(
+      "https://wa.me/541151533922?text=Hola, quiero saber más sobre los programas de entrenamiento",
+      "_blank"
+    );
+  };
+
   return (
     <nav
       ref={navRef}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent backdrop-blur-sm"
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <div className="nav-logo flex items-center space-x-3 cursor-pointer" onClick={() => scrollToSection("#hero")}>
-            <img 
-              src={zyxLogo} 
-              alt="ZYX Logo" 
-              className="h-24 w-auto md:h-40"
-            />
+        <div className="flex items-center h-16 md:h-20">
+          {/* Left Zone - CTA Button */}
+          <div className="flex-1 flex justify-start">
+            <button
+              onClick={handleCtaClick}
+              className="nav-cta hidden md:block px-4 py-2 border-2 border-[#70C4B1] text-[#70C4B1] hover:bg-[#70C4B1] hover:text-white transition-all duration-300 font-cabin font-medium text-sm rounded-full"
+            >
+              Probá una clase
+            </button>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => scrollToSection(item.href)}
-                className="nav-item text-white hover:text-[#70C4B1] transition-colors duration-300 font-cabin font-medium text-lg relative group"
+          {/* Center Zone - Logo */}
+          <div className="flex justify-center">
+            <div
+              className="nav-logo flex items-center space-x-3 cursor-pointer"
+              onClick={() => scrollToSection("#hero")}
+            >
+              <img
+                src={zyxLogo}
+                alt="ZYX Logo"
+                className="h-24 w-auto md:h-40"
+              />
+            </div>
+          </div>
+
+          {/* Right Zone - Desktop Navigation or Mobile Menu Button */}
+          <div className="flex-1 flex justify-end">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollToSection(item.href)}
+                  className="nav-item text-white hover:text-[#70C4B1] transition-colors duration-300 font-cabin font-medium text-lg relative group"
+                >
+                  {item.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#70C4B1] transition-all duration-300 group-hover:w-full"></span>
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-white hover:text-[#70C4B1] transition-colors duration-300 p-2"
+              onClick={toggleMenu}
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {item.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#70C4B1] transition-all duration-300 group-hover:w-full"></span>
-              </button>
-            ))}
+                {isMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-white hover:text-[#70C4B1] transition-colors duration-300 p-2"
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+        <div
+          className={`md:hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+          } overflow-hidden`}
+        >
           <div className="py-4 space-y-4 border-t border-gray-700">
+            {/* Remove the mobile CTA button from here */}
             {navItems.map((item, index) => (
               <button
                 key={index}
@@ -133,9 +190,20 @@ const Navigation = () => {
             ))}
           </div>
         </div>
+      </div>{" "}
+      {/* Mobile CTA Banner - Full width below navbar */}
+      <div className="block md:hidden bg-transparent">
+        <div className="container mx-auto px-4 py-3">
+          <button
+            onClick={handleCtaClick}
+            className="w-full block px-6 py-3 bg-[#70C4B1] text-white hover:bg-[#5fb3a0] transition-all duration-300 font-cabin font-medium text-sm rounded-md"
+          >
+            Probá una clase
+          </button>
+        </div>
       </div>
     </nav>
   );
 };
 
-export default Navigation; 
+export default Navigation;

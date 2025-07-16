@@ -2,19 +2,17 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useState, useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const TrainingGallery = () => {
   const containerRef = useRef(null);
   const [loadedImages, setLoadedImages] = useState(new Set());
+  const [imageAspects, setImageAspects] = useState(new Map());
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   // Import all gallery images
   const galleryImages = [
@@ -29,10 +27,47 @@ const TrainingGallery = () => {
     { src: "./gallery-9.png", alt: "Entrenamiento ZYX #9" },
   ];
 
+  // Convert images for lightbox
+  const lightboxSlides = galleryImages.map(image => ({
+    src: image.src,
+    alt: image.alt,
+  }));
+
+  // Get dynamic span classes based on aspect ratio
+  const getSpanClasses = (index) => {
+    const aspectRatio = imageAspects.get(index);
+    if (!aspectRatio) return ""; // Default until loaded
+    
+    // Define thresholds
+    const isWide = aspectRatio > 1.3;      // Landscape
+    const isTall = aspectRatio < 0.75;     // Portrait
+    const isSquare = aspectRatio >= 0.75 && aspectRatio <= 1.3; // Square-ish
+
+    // Smart spanning logic - balance the grid while respecting orientation
+    if (index === 0) {
+      // Hero tile - always large if wide or square
+      return isWide || isSquare ? "col-span-2 row-span-2" : "row-span-2";
+    } else if (index === 3 && isTall) {
+      // Tall image gets extra height
+      return "row-span-2";
+    } else if (index === 6 && isWide) {
+      // Wide image gets extra width
+      return "col-span-2";
+    } else if (isTall) {
+      // Other tall images get some extra height occasionally
+      return index % 4 === 1 ? "row-span-2" : "";
+    } else if (isWide) {
+      // Other wide images get some extra width occasionally
+      return index % 5 === 2 ? "col-span-2" : "";
+    }
+    
+    return ""; // Normal 1x1 tile
+  };
+
   useGSAP(() => {
-    // Animate carousel container on scroll
+    // Animate quilt gallery container on scroll
     gsap.fromTo(
-      ".carousel-container",
+      ".quilt-gallery",
       {
         scale: 0.95,
         opacity: 0,
@@ -84,8 +119,29 @@ const TrainingGallery = () => {
     );
   }, []);
 
-  const handleImageLoad = (index) => {
+  const handleImageLoad = (index, event) => {
     setLoadedImages((prev) => new Set([...prev, index]));
+    
+    // Calculate and store aspect ratio
+    const img = event.target;
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    setImageAspects((prev) => new Map([...prev, [index, aspectRatio]]));
+  };
+
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const handleKeyPress = (event, index) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openLightbox(index);
+    }
+  };
+
+  const handleClick = (index) => {
+    openLightbox(index);
   };
 
   return (
@@ -102,140 +158,142 @@ const TrainingGallery = () => {
           </p>
         </div>
 
-        {/* Carousel Container */}
+        {/* Quilt Gallery Container */}
         <div className="carousel-container">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={20}
-            slidesPerView={1}
-            centeredSlides={true}
-            loop={true}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-            }}
-            navigation={{
-              prevEl: ".swiper-button-prev-custom",
-              nextEl: ".swiper-button-next-custom",
-            }}
-            pagination={{
-              el: ".swiper-pagination-custom",
-              clickable: true,
-            }}
-            breakpoints={{
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 30,
-              },
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 40,
-              },
-            }}
-            className="training-carousel"
-          >
+          <div className="quilt-gallery grid grid-cols-2 md:grid-cols-3 gap-5 auto-rows-[180px] md:auto-rows-[200px]">
             {galleryImages.map((image, index) => (
-              <SwiperSlide key={index}>
-                <div className="group relative overflow-hidden rounded-lg aspect-square bg-gray-800">
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    loading="lazy"
-                    onLoad={() => handleImageLoad(index)}
-                    className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
-                      loadedImages.has(index) ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
+              <div
+                key={index}
+                className={`group relative rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:ring-4 hover:ring-[#70C4B1]/70 focus:ring-4 focus:ring-[#70C4B1]/70 focus:outline-none cursor-pointer ${getSpanClasses(index)}`}
+                tabIndex={0}
+                onKeyPress={(e) => handleKeyPress(e, index)}
+                onClick={() => handleClick(index)}
+                role="button"
+                aria-label={`Ver imagen: ${image.alt}`}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  loading="lazy"
+                  onLoad={(e) => handleImageLoad(index, e)}
+                  className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-focus:scale-110 ${
+                    loadedImages.has(index) ? "opacity-100" : "opacity-0"
+                  }`}
+                />
 
-                  {/* Loading placeholder */}
-                  {!loadedImages.has(index) && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-8 h-8 border-2 border-[#70C4B1] border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  )}
+                {/* Loading placeholder */}
+                {!loadedImages.has(index) && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                    <div className="w-8 h-8 border-2 border-[#70C4B1] border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
 
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-[#70C4B1]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-[#70C4B1]/20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
+                
+                {/* Click indicator */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300">
+                  <div className="w-12 h-12 bg-[#70C4B1] rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
                 </div>
-              </SwiperSlide>
+              </div>
             ))}
-          </Swiper>
-
-          {/* Custom Navigation */}
-          <div className="flex justify-center items-center mt-8 space-x-4">
-            <button className="swiper-button-prev-custom w-10 h-10 rounded-full bg-[#70C4B1] hover:bg-[#5fb3a0] text-white flex items-center justify-center transition-colors duration-300">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-
-            <div className="swiper-pagination-custom flex space-x-2"></div>
-
-            <button className="swiper-button-next-custom w-10 h-10 rounded-full bg-[#70C4B1] hover:bg-[#5fb3a0] text-white flex items-center justify-center transition-colors duration-300">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Custom Swiper Styles */}
+      {/* Lightbox */}
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        index={lightboxIndex}
+        slides={lightboxSlides}
+        styles={{
+          container: { backgroundColor: "rgba(23, 21, 22, 0.95)" },
+          toolbar: { backgroundColor: "transparent" },
+          button: { color: "#70C4B1" },
+        }}
+        carousel={{
+          preload: 2,
+        }}
+        controller={{
+          closeOnPullDown: true,
+          closeOnBackdropClick: true,
+        }}
+        plugins={[]}
+      />
+
+      {/* Custom Gallery Styles */}
       <style jsx>{`
-        .swiper-button-prev-custom,
-        .swiper-button-next-custom {
-          display: none; 
-        }
-
-        .training-carousel {
-          padding-bottom: 60px;
-        }
-
-        .swiper-pagination-custom .swiper-pagination-bullet {
-          width: 12px;
-          height: 12px;
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          margin: 0 4px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .swiper-pagination-horizontal {
-          width: auto !important;
-        }
-
-        .swiper-pagination-custom .swiper-pagination-bullet-active {
-          background: #70c4b1;
-          transform: scale(1.2);
-        }
-
-        .swiper-slide img {
+        .quilt-gallery img {
           user-select: none;
           -webkit-user-drag: none;
+        }
+
+        /* Fine-tune grid gaps for mobile */
+        @media (max-width: 767px) {
+          .quilt-gallery {
+            gap: 12px;
+          }
+        }
+
+        /* Ensure smooth focus transitions */
+        .quilt-gallery > div:focus {
+          transform: scale(1.02);
+        }
+
+        /* Lightbox custom styles */
+        :global(.yarl__container) {
+          backdrop-filter: blur(8px);
+        }
+
+        :global(.yarl__slide) {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        :global(.yarl__slide img) {
+          max-height: 90vh;
+          max-width: 90vw;
+          object-fit: contain;
+          border-radius: 8px;
+        }
+
+        /* Custom lightbox button styling */
+        :global(.yarl__button) {
+          background: #70C4B1 !important;
+          border-radius: 50% !important;
+          width: 48px !important;
+          height: 48px !important;
+          transition: all 0.3s ease !important;
+        }
+
+        :global(.yarl__button:hover) {
+          background: #5fb3a0 !important;
+          transform: scale(1.05) !important;
+        }
+
+        :global(.yarl__button svg) {
+          color: white !important;
+          width: 24px !important;
+          height: 24px !important;
+        }
+
+        /* Navigation buttons */
+        :global(.yarl__button_prev),
+        :global(.yarl__button_next) {
+          background: #70C4B1 !important;
+        }
+
+        /* Close button */
+        :global(.yarl__button_close) {
+          background: #70C4B1 !important;
+          top: 20px !important;
+          right: 20px !important;
         }
       `}</style>
     </section>

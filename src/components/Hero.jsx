@@ -25,7 +25,7 @@ const Hero = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    // Replace YOUR_NUMBER with actual WhatsApp number
+    
     window.open("https://wa.me/541151533922?text=Hola, quiero saber más sobre los programas de entrenamiento", "_blank");
   };
 
@@ -51,7 +51,7 @@ const Hero = () => {
         </h2>
         
         <button
-          className="hero-cta font-cabin bg-[#70C4B1] hover:bg-[#5fb3a0] text-white text-lg md:text-xl font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#70C4B1]/30"
+          className="hero-cta font-cabin border-2 border-[#70C4B1] hover:bg-[#70C4B1] hover:text-white text-[#70C4B1] text-lg md:text-xl font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#70C4B1]/30"
           onClick={handleWhatsAppClick}
           role="link"
           aria-label="Reserva tu clase por WhatsApp"
