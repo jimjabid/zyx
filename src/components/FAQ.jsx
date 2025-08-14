@@ -11,28 +11,34 @@ const FAQ = () => {
   const faqItems = [
     {
       question: "¿Necesito experiencia previa?",
-      answer: "No es necesario tener experiencia previa. Nuestros entrenamientos están diseñados para adaptarse a todos los niveles, desde principiantes hasta avanzados. Cada ejercicio tiene modificaciones para que puedas progresar a tu ritmo."
+      answer:
+        "No es necesario tener experiencia previa. Nuestros entrenamientos están diseñados para adaptarse a todos los niveles, desde principiantes hasta avanzados.",
     },
     {
       question: "¿Cuánto dura cada clase?",
-      answer: "Cada sesión de entrenamiento dura aproximadamente 60 minutos, incluyendo calentamiento, trabajo principal y relajación."
+      answer:
+        "Cada sesión de entrenamiento dura 1 hora, incluyendo calentamiento, trabajo principal y relajación.",
     },
     {
       question: "¿Qué debo traer a la clase?",
-      answer: "Solo necesitas ropa cómoda para moverte, una botella de agua y una toalla. Nosotros proporcionamos todas las colchonetas y equipos necesarios para el entrenamiento."
+      answer:
+        "Solo necesitas ropa cómoda para moverte, una botella de agua y una toalla. Nosotros te damos el espacio y los materiales.",
     },
     {
       question: "¿Hay clases para diferentes edades?",
-      answer: "Sí, tenemos clases adaptadas para todas las edades. Desde adolescentes hasta adultos mayores, cada grupo tiene ejercicios específicos que respetan las capacidades y necesidades de cada etapa de la vida."
+      answer:
+        "Sí, tenemos clases adaptadas para todas las edades. Desde niños, adolescentes y hasta adultos.",
     },
     {
       question: "¿Cuántas veces por semana debo entrenar?",
-      answer: "Recomendamos comenzar con 2-3 sesiones por semana para permitir que tu cuerpo se adapte. A medida que ganes fuerza y resistencia, puedes aumentar la frecuencia según tus objetivos personales."
+      answer:
+        "Consideramos que esto es muy personal debido a los distintos casos dependiendo de cada alumno. Pero si esta bueno destacar que a medida que ganes fuerza y resistencia, puedes aumentar la frecuencia según tus objetivos personales.",
     },
     {
-      question: "¿Ofrecen clases online?",
-      answer: "Sí, además de nuestras clases presenciales, ofrecemos sesiones online en vivo y entrenamientos grabados para que puedas entrenar desde casa cuando no puedas asistir presencialmente."
-    }
+      question: "¿Como me anoto a las clases?",
+      answer:
+        "El sistema de turnos que proponemos es através de una App en la cual podras elegir el dia y horario que mas te conviene.",
+    },
   ];
 
   useGSAP(() => {
@@ -102,7 +108,7 @@ const FAQ = () => {
                     </h3>
                     <div
                       className={`w-6 h-6 text-[#70C4B1] transition-transform duration-300 flex-shrink-0 ${
-                        openItem === index ? 'rotate-180' : ''
+                        openItem === index ? "rotate-180" : ""
                       }`}
                     >
                       <svg
@@ -121,10 +127,12 @@ const FAQ = () => {
                     </div>
                   </div>
                 </button>
-                
+
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openItem === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    openItem === index
+                      ? "max-h-96 opacity-100"
+                      : "max-h-0 opacity-0"
                   }`}
                 >
                   <div className="px-6 pb-6 font-cabin text-white/80 leading-relaxed">
@@ -140,4 +148,4 @@ const FAQ = () => {
   );
 };
 
-export default FAQ; 
+export default FAQ;

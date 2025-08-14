@@ -28,7 +28,7 @@ const TrainingGallery = () => {
   ];
 
   // Convert images for lightbox
-  const lightboxSlides = galleryImages.map(image => ({
+  const lightboxSlides = galleryImages.map((image) => ({
     src: image.src,
     alt: image.alt,
   }));
@@ -37,10 +37,10 @@ const TrainingGallery = () => {
   const getSpanClasses = (index) => {
     const aspectRatio = imageAspects.get(index);
     if (!aspectRatio) return ""; // Default until loaded
-    
+
     // Define thresholds
-    const isWide = aspectRatio > 1.3;      // Landscape
-    const isTall = aspectRatio < 0.75;     // Portrait
+    const isWide = aspectRatio > 1.3; // Landscape
+    const isTall = aspectRatio < 0.75; // Portrait
     const isSquare = aspectRatio >= 0.75 && aspectRatio <= 1.3; // Square-ish
 
     // Smart spanning logic - balance the grid while respecting orientation
@@ -60,7 +60,7 @@ const TrainingGallery = () => {
       // Other wide images get some extra width occasionally
       return index % 5 === 2 ? "col-span-2" : "";
     }
-    
+
     return ""; // Normal 1x1 tile
   };
 
@@ -121,7 +121,7 @@ const TrainingGallery = () => {
 
   const handleImageLoad = (index, event) => {
     setLoadedImages((prev) => new Set([...prev, index]));
-    
+
     // Calculate and store aspect ratio
     const img = event.target;
     const aspectRatio = img.naturalWidth / img.naturalHeight;
@@ -134,7 +134,7 @@ const TrainingGallery = () => {
   };
 
   const handleKeyPress = (event, index) => {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       openLightbox(index);
     }
@@ -153,8 +153,12 @@ const TrainingGallery = () => {
             Entrenamiento
           </h2>
           <p className="gallery-description font-cabin text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-            Entrenamientos con tu propio peso para todas las edades.
-            Mejora fuerza, movilidad y conciencia corporal sin máquinas.
+            Nuestra propuesta se basa en la calistenia, una disciplina que
+            utiliza el peso de tu propio cuerpo para desarrollar fuerza,
+            movilidad, resistencia y control corporal. Diseñamos cada sesión
+            para que sea accesible y progresiva, adaptándose a todos los
+            niveles, desde quienes dan sus primeros pasos hasta los más
+            avanzados.
           </p>
         </div>
 
@@ -164,7 +168,9 @@ const TrainingGallery = () => {
             {galleryImages.map((image, index) => (
               <div
                 key={index}
-                className={`group relative rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:ring-4 hover:ring-[#70C4B1]/70 focus:ring-4 focus:ring-[#70C4B1]/70 focus:outline-none cursor-pointer ${getSpanClasses(index)}`}
+                className={`group relative rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:ring-4 hover:ring-[#70C4B1]/70 focus:ring-4 focus:ring-[#70C4B1]/70 focus:outline-none cursor-pointer ${getSpanClasses(
+                  index
+                )}`}
                 tabIndex={0}
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 onClick={() => handleClick(index)}
@@ -190,12 +196,22 @@ const TrainingGallery = () => {
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-[#70C4B1]/20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
-                
+
                 {/* Click indicator */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300">
                   <div className="w-12 h-12 bg-[#70C4B1] rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -265,7 +281,7 @@ const TrainingGallery = () => {
 
         /* Custom lightbox button styling */
         :global(.yarl__button) {
-          background: #70C4B1 !important;
+          background: #70c4b1 !important;
           border-radius: 50% !important;
           width: 48px !important;
           height: 48px !important;
@@ -286,12 +302,12 @@ const TrainingGallery = () => {
         /* Navigation buttons */
         :global(.yarl__button_prev),
         :global(.yarl__button_next) {
-          background: #70C4B1 !important;
+          background: #70c4b1 !important;
         }
 
         /* Close button */
         :global(.yarl__button_close) {
-          background: #70C4B1 !important;
+          background: #70c4b1 !important;
           top: 20px !important;
           right: 20px !important;
         }

@@ -71,7 +71,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="mt-6 pt-6 border-t border-gray-800 text-center text-sm text-white/50 font-cabin">
           <p>
-            &copy; {new Date().getFullYear()} ZYX Fitness. Todos los derechos
+            &copy; {new Date().getFullYear()} ZYX. Todos los derechos
             reservados.
           </p>
         </div>

@@ -1,4 +1,4 @@
-# ZYX Fitness Landing Page - Implementation Summary
+# ZYX Landing Page - Implementation Summary
 
 ## 🚀 Project Overview
 

@@ -1,4 +1,4 @@
-import { Navigation, Hero, TrainingGallery, FAQ, Footer } from '../components';
+import { Navigation, Hero, TrainingGallery, AboutUs, FAQ, Footer } from '../components';
 
 const LandingPage = () => {
   return (
@@ -6,6 +6,9 @@ const LandingPage = () => {
       <Navigation />
       <div id="hero">
         <Hero />
+      </div>
+      <div id="about">
+        <AboutUs />
       </div>
       <div id="training">
         <TrainingGallery />

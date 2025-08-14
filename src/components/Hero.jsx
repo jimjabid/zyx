@@ -43,7 +43,7 @@ const Hero = () => {
       {/* Hero Content */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <h1 className="hero-heading font-cabin text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-          Entrená con tu propio peso
+          Entrená con tu propio peso Corporal
         </h1>
         
         <h2 className="hero-subheading font-cabin text-xl md:text-2xl lg:text-3xl text-white/90 mb-8 font-light">
