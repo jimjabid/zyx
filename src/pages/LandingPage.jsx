@@ -1,4 +1,11 @@
-import { Navigation, Hero, TrainingGallery, AboutUs, FAQ, Footer } from '../components';
+import {
+  Navigation,
+  Hero,
+  TrainingGallery,
+  AboutUs,
+  FAQ,
+  Footer,
+} from "../components";
 
 const LandingPage = () => {
   return (
@@ -7,11 +14,11 @@ const LandingPage = () => {
       <div id="hero">
         <Hero />
       </div>
-      <div id="about">
-        <AboutUs />
-      </div>
       <div id="training">
         <TrainingGallery />
+      </div>
+      <div id="about">
+        <AboutUs />
       </div>
       <div id="faq">
         <FAQ />
@@ -23,4 +30,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage; 
+export default LandingPage;
