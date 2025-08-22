@@ -12,7 +12,9 @@ const Navigation = () => {
 
   const navItems = [
     { name: "Inicio", href: "#hero" },
+
     { name: "Entrenamiento", href: "#training" },
+    { name: "Acerca de Zyx", href: "#about" },
     { name: "FAQ", href: "#faq" },
     { name: "Contacto", href: "#footer" },
   ];
