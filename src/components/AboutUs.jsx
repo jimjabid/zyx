@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,77 +14,21 @@ gsap.registerPlugin(ScrollTrigger);
 const AboutUs = () => {
   const containerRef = useRef(null);
   const mediaRef = useRef(null);
-  const [currentStep, setCurrentStep] = useState(0);
+  const leftColumnRef = useRef(null);
+  const sectionRef = useRef(null);
 
-  // Debug currentStep changes
-  useEffect(() => {
-    console.log(
-      "Current step changed to:",
-      currentStep,
-      "Image:",
-      images[currentStep]
-    );
-  }, [currentStep]);
-  const [isMobile, setIsMobile] = useState(false);
+  // Array of refs for step elements
+  const stepRefs = useRef([]);
+  const gsapContextRef = useRef(null);
+  const autoplayIntervalRef = useRef(null);
+  const intersectionObserverRef = useRef(null);
+
+  // Separate state for images (auto-cycling) and steps (scroll-based)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isImageTransitioning, setIsImageTransitioning] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  // Check for reduced motion preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e) => setPrefersReducedMotion(e.matches);
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  // Check if mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 1024;
-      setIsMobile(mobile);
-      console.log("Mobile check:", mobile, "Width:", window.innerWidth);
-
-      // If switching to mobile, immediately cleanup all ScrollTriggers
-      if (mobile) {
-        ScrollTrigger.getAll().forEach((trigger) => {
-          if (
-            trigger.vars.pin === ".media-panel" ||
-            trigger.vars.trigger === containerRef.current
-          ) {
-            trigger.kill();
-          }
-        });
-      }
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Mobile auto-cycle effect
-  useEffect(() => {
-    console.log("Mobile auto-cycle effect:", {
-      isMobile,
-      prefersReducedMotion,
-    });
-    if (isMobile && !prefersReducedMotion) {
-      console.log("Starting mobile auto-cycle");
-      // Start cycling immediately
-      const interval = setInterval(() => {
-        setCurrentStep((prev) => {
-          const next = (prev + 1) % 4;
-          console.log("Auto-cycling to step:", next);
-          return next;
-        });
-      }, 3500);
-
-      return () => clearInterval(interval);
-    }
-  }, [isMobile, prefersReducedMotion]);
 
   const steps = [
     {
@@ -108,151 +52,284 @@ const AboutUs = () => {
         "Estamos para acompañarte paso a paso en tu camino, ayudándote a alcanzar tus metas mientras entrenás junto a personas que, como vos, buscan crecer y superarse día a día.",
     },
   ];
+
   const images = [gallery1, gallery2, gallery3, gallery4];
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion) return;
-
-      const container = containerRef.current;
-      const media = mediaRef.current;
-
-      if (!container || !media) return;
-
-      // Clean up any existing ScrollTriggers
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.vars.pin === ".media-panel") {
-          trigger.kill();
-        }
-      });
-
-      // Desktop scrollytelling setup
-      if (!isMobile) {
-        // Pin the right column
-        ScrollTrigger.create({
-          trigger: container,
-          start: "top top",
-          end: "bottom bottom",
-          pin: ".media-panel",
-          pinSpacing: false,
-          //markers: true,
-        });
-
-        // Create step animations
-        steps.forEach((_, index) => {
-          const stepElement = container.querySelector(`[data-step="${index}"]`);
-          if (!stepElement) return;
-
-          // Fade in animation for each step
-          ScrollTrigger.create({
-            trigger: stepElement,
-            start: "top 70%",
-            end: "bottom 30%",
-            //markers: true,
-            pinSpacing: false,
-            onEnter: () => {
-              setCurrentStep(index);
-              gsap.to(stepElement, {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                ease: "power2.out",
-              });
-            },
-            onLeave: () => {
-              gsap.to(stepElement, {
-                opacity: 0.3,
-                y: 20,
-                duration: 0.3,
-                ease: "power2.out",
-              });
-            },
-            onEnterBack: () => {
-              setCurrentStep(index);
-              gsap.to(stepElement, {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                ease: "power2.out",
-              });
-            },
-            onLeaveBack: () => {
-              gsap.to(stepElement, {
-                opacity: 0.3,
-                y: 20,
-                duration: 0.3,
-                ease: "power2.out",
-              });
-            },
-          });
-        });
-      }
-
-      // Initial state for steps (desktop only)
-      if (!isMobile) {
-        gsap.set("[data-step]", {
-          opacity: 0.3,
-          y: 20,
-        });
-
-        // Show first step
-        gsap.set("[data-step='0']", {
-          opacity: 1,
-          y: 0,
-        });
-      }
-    },
-    { dependencies: [isMobile, prefersReducedMotion] }
+  // Index safety for images
+  const safeImageIndex = Math.min(
+    Math.max(0, currentImageIndex),
+    images.length - 1
   );
 
-  // Cleanup ScrollTriggers on unmount or mobile switch
+  // Dev warnings for mismatched arrays
   useEffect(() => {
-    return () => {
-      // Kill all ScrollTriggers when component unmounts or mobile state changes
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (
-          trigger.vars.pin === ".media-panel" ||
-          trigger.vars.trigger === containerRef.current
-        ) {
-          trigger.kill();
-        }
-      });
+    if (process.env.NODE_ENV === "development") {
+      if (steps.length !== images.length) {
+        console.warn(
+          `AboutUs: Steps length (${steps.length}) doesn't match images length (${images.length})`
+        );
+      }
+    }
+  }, []);
+
+  // Check for reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleChange = (e) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  // Image preloading
+  useEffect(() => {
+    let loadedCount = 0;
+    const totalImages = images.length;
+
+    const handleImageLoad = () => {
+      loadedCount++;
+      if (loadedCount === totalImages) {
+        setImagesLoaded(true);
+        // Refresh ScrollTrigger after images are loaded
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 100);
+      }
     };
-  }, [isMobile]);
 
-  // Image crossfade effect
+    // Preload all images
+    images.forEach((src) => {
+      const img = new Image();
+      img.onload = handleImageLoad;
+      img.onerror = handleImageLoad; // Count failed loads too
+      img.src = src;
+    });
+
+    // Also refresh on window load
+    const handleWindowLoad = () => {
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+    };
+
+    window.addEventListener("load", handleWindowLoad);
+    return () => window.removeEventListener("load", handleWindowLoad);
+  }, []);
+
+  // IntersectionObserver for image autoplay visibility
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (!sectionRef.current) return;
 
+    intersectionObserverRef.current = new IntersectionObserver(
+      ([entry]) => {
+        setIsSectionVisible(entry.isIntersecting);
+      },
+      { threshold: 0.3 }
+    );
+
+    intersectionObserverRef.current.observe(sectionRef.current);
+
+    return () => {
+      if (intersectionObserverRef.current) {
+        intersectionObserverRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Image crossfade effect (independent of steps)
+  useEffect(() => {
     const media = mediaRef.current;
-    if (!media) return;
+    if (!media || !imagesLoaded) return;
+
+    if (prefersReducedMotion) {
+      // Instant update for reduced motion
+      media.src = images[safeImageIndex];
+      return;
+    }
+
+    setIsImageTransitioning(true);
 
     gsap.to(media, {
       opacity: 0,
       duration: 0.3,
       ease: "power2.out",
       onComplete: () => {
+        // Change image source after fade-out completes
+        media.src = images[safeImageIndex];
         gsap.to(media, {
           opacity: 1,
           duration: 0.6,
           ease: "power2.out",
+          onComplete: () => {
+            setIsImageTransitioning(false);
+          },
         });
       },
     });
-  }, [currentStep, prefersReducedMotion]);
+  }, [safeImageIndex, prefersReducedMotion, imagesLoaded]);
+
+  // Auto-cycle images when section is visible (independent of steps)
+  useEffect(() => {
+    if (!isSectionVisible || prefersReducedMotion) {
+      if (autoplayIntervalRef.current) {
+        clearInterval(autoplayIntervalRef.current);
+        autoplayIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // Clear any existing interval
+    if (autoplayIntervalRef.current) {
+      clearInterval(autoplayIntervalRef.current);
+    }
+
+    // Start autoplay interval for images only
+    autoplayIntervalRef.current = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+
+    return () => {
+      if (autoplayIntervalRef.current) {
+        clearInterval(autoplayIntervalRef.current);
+        autoplayIntervalRef.current = null;
+      }
+    };
+  }, [isSectionVisible, prefersReducedMotion, images.length]);
+
+  // GSAP setup for step animations only (no image sync)
+  useGSAP(
+    () => {
+      if (prefersReducedMotion || !imagesLoaded) return;
+
+      const container = containerRef.current;
+      const leftColumn = leftColumnRef.current;
+      if (!container || !leftColumn) return;
+
+      // Create GSAP context for cleanup
+      gsapContextRef.current = gsap.context(() => {
+        // Desktop setup with matchMedia
+        gsap.matchMedia().add("(min-width: 1024px)", () => {
+          const leftColumnHeight = leftColumn.scrollHeight;
+          const mediaHeight = mediaRef.current?.offsetHeight || 600;
+          const pinEnd = Math.max(leftColumnHeight - mediaHeight + 200, 500);
+
+          // Pin the media panel
+          const pinTrigger = ScrollTrigger.create({
+            trigger: container,
+            start: "top top",
+            end: `+=${pinEnd}`,
+            pin: ".media-panel",
+            pinSpacing: true,
+            anticipatePin: 1,
+          });
+
+          // Create ScrollTrigger for each step (no image changes)
+          stepRefs.current.forEach((stepRef, index) => {
+            if (!stepRef) return;
+
+            ScrollTrigger.create({
+              trigger: stepRef,
+              start: "top 70%",
+              end: "bottom 30%",
+              onToggle: (self) => {
+                if (self.isActive) {
+                  // Only animate step visibility, no image changes
+                  gsap.to(stepRef, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    ease: "power2.out",
+                  });
+                } else {
+                  gsap.to(stepRef, {
+                    opacity: 0.3,
+                    y: 20,
+                    duration: 0.3,
+                    ease: "power2.out",
+                  });
+                }
+              },
+            });
+          });
+
+          // Initial state for steps
+          gsap.set(stepRefs.current.filter(Boolean), {
+            opacity: 0.3,
+            y: 20,
+          });
+
+          // Show first step
+          if (stepRefs.current[0]) {
+            gsap.set(stepRefs.current[0], {
+              opacity: 1,
+              y: 0,
+            });
+          }
+
+          return () => {
+            pinTrigger.kill();
+          };
+        });
+
+        // Mobile setup
+        gsap.matchMedia().add("(max-width: 1023px)", () => {
+          // Reset any desktop animations
+          gsap.set(stepRefs.current.filter(Boolean), {
+            opacity: 1,
+            y: 0,
+          });
+        });
+      }, container);
+
+      return () => {
+        if (gsapContextRef.current) {
+          gsapContextRef.current.revert();
+        }
+      };
+    },
+    { dependencies: [prefersReducedMotion, imagesLoaded] }
+  );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (gsapContextRef.current) {
+        gsapContextRef.current.revert();
+      }
+      if (autoplayIntervalRef.current) {
+        clearInterval(autoplayIntervalRef.current);
+      }
+      if (intersectionObserverRef.current) {
+        intersectionObserverRef.current.disconnect();
+      }
+    };
+  }, []);
 
   return (
-    <section id="about" className="py-16 px-6 bg-[#171516] lg:min-h-screen">
+    <section
+      ref={sectionRef}
+      id="about"
+      className="py-16 px-6 bg-[#171516] lg:min-h-screen"
+    >
       <div className="max-w-7xl mx-auto" ref={containerRef}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Column - Scrolling Steps */}
-          <div className="space-y-8 lg:space-y-24 order-1 lg:order-none">
+          <div
+            ref={leftColumnRef}
+            className="space-y-8 lg:space-y-24 order-1 lg:order-none"
+          >
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 lg:sticky lg:top-8 z-10 bg-[#171516] py-4">
               Acerca de ZYX
             </h2>
 
             {steps.map((step, index) => (
-              <div key={index} data-step={index} className="step-content">
+              <div
+                key={index}
+                ref={(el) => (stepRefs.current[index] = el)}
+                className="step-content"
+              >
                 <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">
                   {step.title}
                 </h3>
@@ -263,42 +340,40 @@ const AboutUs = () => {
             ))}
           </div>
 
-          {/* Right Column - Pinned Media Panel */}
+          {/* Right Column - Pinned Media Panel with Auto-cycling Images */}
           <div className="lg:sticky lg:top-8 media-panel order-2 lg:order-none">
             <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-2xl">
               <img
                 ref={mediaRef}
-                src={images[currentStep] || images[0]}
-                alt={`ZYX Gimnasio - ${
-                  steps[currentStep]?.title || steps[0]?.title
-                }`}
-                className="w-full h-full object-cover transition-opacity duration-300"
+                src={images[safeImageIndex]}
+                alt={`ZYX Gimnasio - Gallery ${safeImageIndex + 1}`}
+                className="w-full h-full object-cover"
                 onError={(e) => {
                   console.error("Image failed to load:", e.target.src);
-                  e.target.src = images[0]; // Fallback to first image
+                  if (e.target.src !== images[0]) {
+                    e.target.src = images[0]; // Fallback to first image
+                  }
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-transparent"></div>
 
-              {/* Step indicator for mobile */}
-              {isMobile && (
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="flex justify-center space-x-2">
-                    {steps.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentStep(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                          index === currentStep
-                            ? "bg-white scale-125"
-                            : "bg-white/50 hover:bg-white/75"
-                        }`}
-                        aria-label={`Go to step ${index + 1}`}
-                      />
-                    ))}
-                  </div>
+              {/* Image indicator dots (shows current image, not step) */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex justify-center space-x-2">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        index === safeImageIndex
+                          ? "bg-white scale-125"
+                          : "bg-white/50 hover:bg-white/75"
+                      }`}
+                      aria-label={`Go to image ${index + 1}`}
+                    />
+                  ))}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
