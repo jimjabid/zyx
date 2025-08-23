@@ -275,10 +275,53 @@ const AboutUs = () => {
 
         // Mobile setup
         gsap.matchMedia().add("(max-width: 1023px)", () => {
-          // Reset any desktop animations
+          // Initial hidden state for mobile steps
           gsap.set(stepRefs.current.filter(Boolean), {
-            opacity: 1,
-            y: 0,
+            opacity: 0,
+            y: 30,
+          });
+
+          // Create ScrollTrigger for each step on mobile
+          stepRefs.current.forEach((stepRef, index) => {
+            if (!stepRef) return;
+
+            ScrollTrigger.create({
+              trigger: stepRef,
+              start: "top 80%",
+              end: "bottom 20%",
+              onEnter: () => {
+                gsap.to(stepRef, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.8,
+                  ease: "power2.out",
+                });
+              },
+              onLeave: () => {
+                gsap.to(stepRef, {
+                  opacity: 0.4,
+                  y: 15,
+                  duration: 0.4,
+                  ease: "power2.out",
+                });
+              },
+              onEnterBack: () => {
+                gsap.to(stepRef, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.8,
+                  ease: "power2.out",
+                });
+              },
+              onLeaveBack: () => {
+                gsap.to(stepRef, {
+                  opacity: 0,
+                  y: 30,
+                  duration: 0.4,
+                  ease: "power2.out",
+                });
+              },
+            });
           });
         });
       }, container);
