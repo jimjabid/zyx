@@ -88,10 +88,7 @@ const Navigation = () => {
   };
 
   const handleCtaClick = () => {
-    window.open(
-      "https://wa.me/541151533922?text=Hola, quiero saber más sobre los programas de entrenamiento",
-      "_blank"
-    );
+    window.open("https://s3.reservaclase.com/zyxfit/", "_blank");
   };
 
   return (

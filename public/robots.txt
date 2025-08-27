@@ -1,0 +1,74 @@
+# Robots.txt for ZYX Fitness Website
+# This file guides search engine crawlers on which parts of the site to index
+
+# Allow all crawlers access to the entire site
+User-agent: *
+Allow: /
+
+# Specifically allow important files
+Allow: /sitemap.xml
+Allow: /zyx-full-logo.png
+Allow: /zyx-logo.png
+Allow: /hero.png
+Allow: /gallery-*.png
+
+# Disallow crawling of development/build files if they exist
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /*.json
+Disallow: /*.js.map
+Disallow: /*.css.map
+Disallow: /vite.config.js
+Disallow: /tailwind.config.js
+Disallow: /eslint.config.js
+Disallow: /package.json
+Disallow: /package-lock.json
+
+# Disallow admin areas (if any exist in the future)
+Disallow: /admin/
+Disallow: /login/
+Disallow: /dashboard/
+
+# Disallow temp files and common problem areas
+Disallow: /tmp/
+Disallow: /temp/
+Disallow: /*.tmp
+Disallow: /test/
+Disallow: /tests/
+
+# Allow search engines to crawl CSS and JS files for better rendering
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+
+# Block crawling of sensitive file types (security best practice)
+Disallow: /*.sql
+Disallow: /*.env
+Disallow: /*.log
+Disallow: /*.bak
+Disallow: /*.backup
+
+# Point to the sitemap
+Sitemap: https://zyxfit.com/sitemap.xml
+
+# Crawl delay - be polite to prevent overwhelming the server
+# 1 second delay for all bots
+Crawl-delay: 1
+
+# Specific settings for major search engines
+User-agent: Googlebot
+Crawl-delay: 0
+Allow: /
+
+User-agent: Bingbot
+Crawl-delay: 1
+Allow: /
+
+User-agent: Slurp
+Crawl-delay: 1
+Allow: /
