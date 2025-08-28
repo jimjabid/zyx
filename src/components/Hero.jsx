@@ -25,7 +25,7 @@ const Hero = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    window.open("https://s3.reservaclase.com/zyxfit/", "_blank");
+    window.open("https://s3x.reservaclase.com/zyxfit/", "_blank");
   };
 
   return (
