@@ -33,7 +33,7 @@ const Footer = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start space-y-2 sm:space-y-0 sm:space-x-6 text-white/80 font-cabin">
               <div className="flex items-center justify-center lg:justify-start space-x-2">
                 <span>📍</span>
-                <span>Buenos Aires, AR</span>
+                <span>Av Federico Lacroze 2866 - Colegiales</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start space-x-2">
                 <span>✉️</span>
@@ -47,10 +47,10 @@ const Footer = () => {
               <div className="flex items-center justify-center lg:justify-start space-x-2">
                 <span>📞</span>
                 <a
-                  href="https://wa.me/541151533922?text=Hola, quiero saber más sobre los programas de entrenamiento"
+                  href="https://wa.me/5491173728608?text=Hola, quiero saber más sobre los programas de entrenamiento"
                   className="hover:text-[#70C4B1] transition-colors duration-200"
                 >
-                  +54 11 5153 3922
+                  +54 11 7372-8608
                 </a>
               </div>
             </div>
@@ -78,8 +78,7 @@ const Footer = () => {
       </div>
       {/* Developer credit */}
       <div className="mt-4 text-sm text-white/60 text-center lg:text-center font-cabin flex flex-col justify-center items-center">
-        Landing Page desarrollada y diseñada por{" "}
-        <span className="text-[#70C4B1] ">Jabid Jimenez</span>
+        Designed and developed by <span className="text-[#70C4B1] ">Jabid</span>
       </div>
     </footer>
   );

@@ -37,7 +37,7 @@ const FAQ = () => {
     {
       question: "¿Como me anoto a las clases?",
       answer:
-        "El sistema de turnos que proponemos es através de una App en la cual podras elegir el dia y horario que mas te conviene.",
+        "El sistema de turnos que proponemos es a través de una App en la cual podras elegir el dia y horario que mas te conviene.",
     },
   ];
 

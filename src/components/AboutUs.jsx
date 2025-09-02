@@ -235,7 +235,7 @@ const AboutUs = () => {
               end: "bottom 30%",
               onToggle: (self) => {
                 if (self.isActive) {
-                  // Only animate step visibility, no image changes
+                  // Only animate step position, keep full opacity
                   gsap.to(stepRef, {
                     opacity: 1,
                     y: 0,
@@ -243,9 +243,10 @@ const AboutUs = () => {
                     ease: "power2.out",
                   });
                 } else {
+                  // Keep full opacity, only slight position change
                   gsap.to(stepRef, {
-                    opacity: 0.3,
-                    y: 20,
+                    opacity: 1,
+                    y: 10,
                     duration: 0.3,
                     ease: "power2.out",
                   });
@@ -254,19 +255,11 @@ const AboutUs = () => {
             });
           });
 
-          // Initial state for steps
+          // Initial state for steps - all fully visible
           gsap.set(stepRefs.current.filter(Boolean), {
-            opacity: 0.3,
-            y: 20,
+            opacity: 1,
+            y: 0,
           });
-
-          // Show first step
-          if (stepRefs.current[0]) {
-            gsap.set(stepRefs.current[0], {
-              opacity: 1,
-              y: 0,
-            });
-          }
 
           return () => {
             pinTrigger.kill();
@@ -275,10 +268,10 @@ const AboutUs = () => {
 
         // Mobile setup
         gsap.matchMedia().add("(max-width: 1023px)", () => {
-          // Initial hidden state for mobile steps
+          // Initial visible state for mobile steps
           gsap.set(stepRefs.current.filter(Boolean), {
-            opacity: 0,
-            y: 30,
+            opacity: 1,
+            y: 0,
           });
 
           // Create ScrollTrigger for each step on mobile
@@ -298,9 +291,10 @@ const AboutUs = () => {
                 });
               },
               onLeave: () => {
+                // Keep full opacity, minimal position change
                 gsap.to(stepRef, {
-                  opacity: 0.4,
-                  y: 15,
+                  opacity: 1,
+                  y: 5,
                   duration: 0.4,
                   ease: "power2.out",
                 });
@@ -314,9 +308,10 @@ const AboutUs = () => {
                 });
               },
               onLeaveBack: () => {
+                // Keep full opacity, minimal position change
                 gsap.to(stepRef, {
-                  opacity: 0,
-                  y: 30,
+                  opacity: 1,
+                  y: 5,
                   duration: 0.4,
                   ease: "power2.out",
                 });
